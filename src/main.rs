@@ -1,7 +1,9 @@
 use std::env;
 
+// defined alphabet
+// '-' starts, to be a placeholder of 0th element
 const UPPERCASE_ALPHABET: &str = "-ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-const LOWERCASE_ALPHABET: &str = "abcdefghijklmnopqrstuvwxyz";
+const LOWERCASE_ALPHABET: &str = "-abcdefghijklmnopqrstuvwxyz";
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -17,12 +19,12 @@ fn main() {
 
     // println!("uppercase: {} ", &UPPERCASE_ALPHABET);
     // println!("lowercase: {}", &LOWERCASE_ALPHABET);
-
-    if !is_valid_alphabet_char(input) {
+    let cleaned_input = input.replace(" ", "");
+    if !is_valid_alphabet_char(&cleaned_input) {
         return;
     }
 
-    shift_string(input, &nshift)
+    shift_string(&cleaned_input, &nshift)
 
 }
 
@@ -70,6 +72,35 @@ fn shift_string(input: &str, nshifted: &i32) {
                     println!("No char at shifted position [{}]: '{}'", index, c);
                     println!("x: {} Multiple: {}", x, (x + x.next_multiple_of(*nshifted as usize)));
                     println!("{:?}", UPPERCASE_ALPHABET.chars().nth(x));
+                },
+            }
+        }
+        if LOWERCASE_ALPHABET.contains(c) {
+            let x =  match LOWERCASE_ALPHABET.char_indices().find(|&x| x.1 == c.clone()) {
+                Some(some) => {
+                    some.0
+                },
+                None => { 
+                    println!("No x usize");
+                    0
+                 },
+            };
+            let next_pos = match (x + *nshifted as usize) > 26 {
+                true => {
+                    (x + *nshifted as usize) - 26
+                },
+                false => x + *nshifted as usize,
+            };
+            let char_at_shifted_position = LOWERCASE_ALPHABET.char_indices().nth(next_pos);
+            match char_at_shifted_position {
+                Some(char_tuple) => {
+                    shifted_text.push_str(&char_tuple.1.to_string());
+                    // println!("string [{}]: {}", index, &shifted_text);
+                },
+                None => {
+                    println!("No char at shifted position [{}]: '{}'", index, c);
+                    println!("x: {} Multiple: {}", x, (x + x.next_multiple_of(*nshifted as usize)));
+                    println!("{:?}", LOWERCASE_ALPHABET.chars().nth(x));
                 },
             }
         }
